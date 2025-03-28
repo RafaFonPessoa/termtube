@@ -1,28 +1,25 @@
-import yt_dlp 
+import argparse
 import os
-import sys
-
-def download_video(url, path_directory):
-    ydl_opts = {
-                'outtmpl': os.path.join(path_directory, '%(title)s.%(ext)s'),
-                'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-            }
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
-
+from termtube_video import download_video
+from termtube_audio import download_audio
 
 def main():
-    if len(sys.argv) < 2:
-        print("Uso: termtube <URL_do_video>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Download videos and audios from Youtube!")
+    parser.add_argument("url", help="URL do vídeo a ser baixado.")
+    parser.add_argument("-f", "--formato", help="Formatos disponíveis: mp4, webm, mkv, flv, avi and mov.")
+    parser.add_argument("-p", "--path", help="Folder path ex: ~/Downloads/")
+    parser.add_argument("-a", "--audio", action="store_true", help="Baixar apenas o áudio.") # Correção: adicionado action="store_true"
+    args = parser.parse_args()
 
-    url_video = sys.argv[1]
-    path_directory = os.path.expanduser('~/Downloads')
-    download_video(url_video, path_directory)
-    print(f"Video baixado para: {path_directory}")
+    if args.audio:
+        download_audio(args.url, args.path)
+    else:
+        download_video(args.url, args.path, args.formato)
 
+    if args.path:
+        print(f"Arquivo baixado para a pasta: {args.path}")
+    else:
+        print("Arquivo baixado para a pasta Downloads!")
 
 if __name__ == '__main__':
     main()
-
-
